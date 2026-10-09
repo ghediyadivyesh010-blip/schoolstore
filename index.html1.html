@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blossom High - Official School Merchandise Store</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            pink: {
+              50: '#fff1f2',
+              100: '#ffe4e6',
+              200: '#fecdd3',
+              300: '#fda4af',
+              400: '#fb7185',
+              500: '#f43f5e',
+              600: '#e11d48',
+              700: '#be123c',
+              800: '#9f1239',
+              900: '#881337',
+            },
+            blossom: {
+              light: '#FFF0F5',
+              soft: '#FDE2E4',
+              mid: '#FFCAD4',
+              accent: '#E85D75',
+              deep: '#B52B40'
+            }
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Playfair Display"', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    #flowerCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 40;
+    }
+
+    /* Custom pink scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #FFF0F5;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #FFCAD4;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #fb7185;
+    }
+
+    /* Glassmorphism card utilities */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 202, 212, 0.5);
+    }
+
+    .pink-glow {
+      box-shadow: 0 10px 25px -5px rgba(244, 63, 94, 0.25);
+    }
+
+    .product-card-enter {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-b from-blossom-light via-white to-pink-50 font-sans text-gray-800 min-h-screen flex flex-col relative overflow-x-hidden">
+
+  <!-- Canvas for falling flowers background -->
+  <canvas id="flowerCanvas"></canvas>
+
+  <!-- Top Announcement Promo Bar -->
+  <div class="bg-gradient-to-r from-pink-500 via-rose-500 to-pink-600 text-white text-xs sm:text-sm font-medium py-2 px-4 text-center relative z-50 shadow-sm flex items-center justify-center gap-2">
+    <span>🌸 Spring Semester Sale! Use code <strong class="bg-white text-pink-700 px-2 py-0.5 rounded font-bold uppercase tracking-wider">PINK20</strong> for 20% off all hoodies, bottles & stationery!</span>
+    <button onclick="copyPromoCode('PINK20')" class="hidden sm:inline-flex items-center gap-1 text-xs bg-pink-700/50 hover:bg-pink-800/60 px-2 py-0.5 rounded transition">
+      <i class="fa-regular fa-copy"></i> Copy
+    </button>
+  </div>
+
+  <!-- Header Navigation -->
+  <header class="sticky top-0 z-30 glass-card transition-all duration-300 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        
+        <!-- School Crest Logo -->
+        <a href="#" class="flex items-center gap-3 group">
+          <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-pink-500 to-blossom-accent flex items-center justify-center text-white text-xl font-bold shadow-md transform group-hover:rotate-6 transition-transform">
+            🌸
+          </div>
+          <div>
+            <span class="font-serif text-xl sm:text-2xl font-bold text-gray-900 tracking-tight block">Blossom High</span>
+            <span class="text-[10px] tracking-widest uppercase font-bold text-pink-500 block -mt-1">Official Merch Store</span>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation Links -->
+        <nav class="hidden md:flex items-center space-x-7 text-sm font-medium text-gray-700">
+          <a href="#hero" class="hover:text-pink-600 transition-colors">Home</a>
+          <a href="#catalog" onclick="filterCategory('all')" class="hover:text-pink-600 transition-colors">All Products</a>
+          <a href="#catalog" onclick="filterCategory('hoodies')" class="hover:text-pink-600 transition-colors">Hoodies</a>
+          <a href="#catalog" onclick="filterCategory('tshirts')" class="hover:text-pink-600 transition-colors">T-Shirts</a>
+          <a href="#catalog" onclick="filterCategory('caps')" class="hover:text-pink-600 transition-colors">Caps</a>
+          <a href="#catalog" onclick="filterCategory('bottles')" class="hover:text-pink-600 transition-colors">Bottles</a>
+          <a href="#catalog" onclick="filterCategory('stationery')" class="hover:text-pink-600 transition-colors">Stationery</a>
+          <a href="#storefront" class="hover:text-pink-600 transition-colors">Store Photo</a>
+          <a href="#reviews" class="hover:text-pink-600 transition-colors">Reviews</a>
+        </nav>
+
+        <!-- Header Controls (Petals toggle, Search, Cart) -->
+        <div class="flex items-center gap-3">
+          <!-- Petals Dynamic Toggle -->
+          <button id="togglePetalsBtn" onclick="togglePetals()" title="Toggle Falling Flowers" class="p-2.5 rounded-full text-pink-600 hover:bg-pink-100/60 transition flex items-center gap-1 text-xs font-semibold" aria-label="Toggle Flowers Animation">
+            <i class="fa-solid fa-spa text-lg"></i>
+            <span class="hidden sm:inline">Petals</span>
+          </button>
+
+          <!-- Search Input -->
+          <div class="relative hidden sm:block">
+            <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Search hoodies, caps, pens..." class="w-40 lg:w-56 pl-9 pr-4 py-2 rounded-full text-xs bg-pink-50/80 border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:bg-white transition-all">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-pink-400 text-xs"></i>
+          </div>
+
+          <!-- Shopping Basket Button -->
+          <button onclick="toggleCartDrawer()" class="relative p-2.5 rounded-full bg-pink-100 text-pink-700 hover:bg-pink-200 transition-colors flex items-center justify-center">
+            <i class="fa-solid fa-basket-shopping text-lg"></i>
+            <span id="cartCountBadge" class="absolute -top-1 -right-1 bg-pink-600 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Carousel Slider Section -->
+  <section id="hero" class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+    <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-pink-100 via-blossom-mid to-pink-200 shadow-xl min-h-[380px] sm:min-h-[440px] flex items-center">
+      
+      <!-- Slide 1: General Apparel -->
+      <div class="hero-slide absolute inset-0 transition-opacity duration-700 opacity-100 flex items-center px-6 sm:px-12 lg:px-16 py-8" data-slide="0">
+        <div class="max-w-xl z-10">
+          <span class="inline-block px-3 py-1 bg-white/80 backdrop-blur-md text-pink-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3 shadow-sm">Spring Collection 2026</span>
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold text-gray-900 leading-tight mb-4">
+            Wear Your School Spirit in <span class="text-pink-600 underline decoration-pink-300">Pastel Pink</span>
+          </h1>
+          <p class="text-gray-700 text-sm sm:text-base mb-6 leading-relaxed">
+            Discover our premium lineup of cozy fleece hoodies, varsity t-shirts, stainless steel water bottles, and essential pastel stationery designed for Blossom High students.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#catalog" class="px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-full shadow-lg hover:shadow-pink-500/30 transition transform hover:-translate-y-0.5 text-sm">Shop Collection</a>
+            <button onclick="applyPromoAndScroll('STUDENT15')" class="px-6 py-3 bg-white hover:bg-pink-50 text-pink-700 font-semibold rounded-full border border-pink-300 transition text-sm shadow-sm">Get 15% Student Discount</button>
+          </div>
+        </div>
+        <div class="absolute right-0 bottom-0 top-0 w-1/2 hidden md:block overflow-hidden pointer-events-none">
+          <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=800&q=80" alt="School Hoodies & Apparel" class="w-full h-full object-cover object-center opacity-90">
+        </div>
+      </div>
+
+      <!-- Slide 2: Water Bottles & Caps -->
+      <div class="hero-slide absolute inset-0 transition-opacity duration-700 opacity-0 pointer-events-none flex items-center px-6 sm:px-12 lg:px-16 py-8" data-slide="1">
+        <div class="max-w-xl z-10">
+          <span class="inline-block px-3 py-1 bg-white/80 backdrop-blur-md text-pink-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3 shadow-sm">Campus Accessories</span>
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold text-gray-900 leading-tight mb-4">
+            Custom Pink <span class="text-pink-600">Bottles & Caps</span>
+          </h1>
+          <p class="text-gray-700 text-sm sm:text-base mb-6 leading-relaxed">
+            Double-wall insulated stainless steel flasks keeping water cold for 24 hours. Pair with our breathable embroidered dad caps for campus events!
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#catalog" onclick="filterCategory('bottles')" class="px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-full shadow-lg transition text-sm">Explore Flasks & Caps</a>
+          </div>
+        </div>
+        <div class="absolute right-0 bottom-0 top-0 w-1/2 hidden md:block overflow-hidden pointer-events-none">
+          <img src="https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=800&q=80" alt="Insulated Water Bottles" class="w-full h-full object-cover object-center opacity-90">
+        </div>
+      </div>
+
+      <!-- Slide 3: Pastel Stationery -->
+      <div class="hero-slide absolute inset-0 transition-opacity duration-700 opacity-0 pointer-events-none flex items-center px-6 sm:px-12 lg:px-16 py-8" data-slide="2">
+        <div class="max-w-xl z-10">
+          <span class="inline-block px-3 py-1 bg-white/80 backdrop-blur-md text-pink-600 text-xs font-bold uppercase tracking-widest rounded-full mb-3 shadow-sm">Classroom Essentials</span>
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold text-gray-900 leading-tight mb-4">
+            Aesthetic <span class="text-pink-600">Pastel Stationery</span> Kits
+          </h1>
+          <p class="text-gray-700 text-sm sm:text-base mb-6 leading-relaxed">
+            Ace your exams in style! Soft pink highlighters, hardcover spiral journals, canvas pencil pouches, and gel pen sets stamped with our official crest.
+          </p>
+          <div class="flex flex-wrap gap-3">
+            <a href="#catalog" onclick="filterCategory('stationery')" class="px-6 py-3 bg-pink-600 hover:bg-pink-700 text-white font-semibold rounded-full shadow-lg transition text-sm">Shop Stationery</a>
+          </div>
+        </div>
+        <div class="absolute right-0 bottom-0 top-0 w-1/2 hidden md:block overflow-hidden pointer-events-none">
+          <img src="https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=800&q=80" alt="Pastel Stationery Set" class="w-full h-full object-cover object-center opacity-90">
+        </div>
+      </div>
+
+      <!-- Carousel Navigation Arrows & Indicators -->
+      <div class="absolute bottom-4 left-6 sm:left-12 z-20 flex items-center space-x-2">
+        <button onclick="prevSlide()" class="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-pink-700 flex items-center justify-center shadow transition" aria-label="Previous Slide">
+          <i class="fa-solid fa-chevron-left text-xs"></i>
+        </button>
+        <div class="flex space-x-1.5 px-2" id="sliderDots">
+          <span onclick="goToSlide(0)" class="w-3 h-3 rounded-full bg-pink-600 cursor-pointer transition-all"></span>
+          <span onclick="goToSlide(1)" class="w-3 h-3 rounded-full bg-white/60 hover:bg-white cursor-pointer transition-all"></span>
+          <span onclick="goToSlide(2)" class="w-3 h-3 rounded-full bg-white/60 hover:bg-white cursor-pointer transition-all"></span>
+        </div>
+        <button onclick="nextSlide()" class="w-9 h-9 rounded-full bg-white/80 hover:bg-white text-pink-700 flex items-center justify-center shadow transition" aria-label="Next Slide">
+          <i class="fa-solid fa-chevron-right text-xs"></i>
+        </button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Active Promo Codes Grid in Indian Rupees -->
+  <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Code 1 -->
+      <div class="glass-card p-4 rounded-2xl flex items-center gap-4 hover:border-pink-300 transition shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-ticket"></i>
+        </div>
+        <div class="flex-1">
+          <div class="text-xs text-gray-500 font-medium">Use Coupon Code</div>
+          <div class="font-bold text-gray-900 text-sm flex items-center gap-2">
+            <span>PINK20</span>
+            <span class="text-[10px] bg-pink-100 text-pink-700 px-1.5 py-0.5 rounded font-semibold">20% OFF</span>
+          </div>
+          <p class="text-[11px] text-gray-500">Applicable storewide on orders over ₹499</p>
+        </div>
+        <button onclick="copyPromoCode('PINK20')" class="text-xs bg-pink-50 hover:bg-pink-100 text-pink-600 font-semibold px-3 py-1.5 rounded-lg border border-pink-200 transition">Copy</button>
+      </div>
+
+      <!-- Code 2 -->
+      <div class="glass-card p-4 rounded-2xl flex items-center gap-4 hover:border-pink-300 transition shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-graduation-cap"></i>
+        </div>
+        <div class="flex-1">
+          <div class="text-xs text-gray-500 font-medium">Student Special</div>
+          <div class="font-bold text-gray-900 text-sm flex items-center gap-2">
+            <span>STUDENT15</span>
+            <span class="text-[10px] bg-pink-100 text-pink-700 px-1.5 py-0.5 rounded font-semibold">15% OFF</span>
+          </div>
+          <p class="text-[11px] text-gray-500">Instant discount for enrolled students</p>
+        </div>
+        <button onclick="copyPromoCode('STUDENT15')" class="text-xs bg-pink-50 hover:bg-pink-100 text-pink-600 font-semibold px-3 py-1.5 rounded-lg border border-pink-200 transition">Copy</button>
+      </div>
+
+      <!-- Code 3 -->
+      <div class="glass-card p-4 rounded-2xl flex items-center gap-4 hover:border-pink-300 transition shadow-sm">
+        <div class="w-12 h-12 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-xl shrink-0">
+          <i class="fa-solid fa-truck-fast"></i>
+        </div>
+        <div class="flex-1">
+          <div class="text-xs text-gray-500 font-medium">Free Delivery</div>
+          <div class="font-bold text-gray-900 text-sm flex items-center gap-2">
+            <span>FREESHIP</span>
+            <span class="text-[10px] bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded font-semibold">FREE SHIP</span>
+          </div>
+          <p class="text-[11px] text-gray-500">Free pickup or delivery to campus center</p>
+        </div>
+        <button onclick="copyPromoCode('FREESHIP')" class="text-xs bg-pink-50 hover:bg-pink-100 text-pink-600 font-semibold px-3 py-1.5 rounded-lg border border-pink-200 transition">Copy</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Campus Physical Store Front Showcase -->
+  <section id="storefront" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="glass-card rounded-3xl p-6 sm:p-8 shadow-lg border border-pink-200 bg-gradient-to-r from-pink-50/90 via-white to-blossom-light/80">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <!-- Store Photos Grid -->
+        <div class="lg:col-span-7 grid grid-cols-2 gap-3">
+          <div class="relative rounded-2xl overflow-hidden h-56 sm:h-64 shadow-md group">
+            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80" alt="Blossom High Campus Store Front" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute bottom-2 left-2 bg-gray-900/70 backdrop-blur-md text-white text-[10px] px-2.5 py-1 rounded-full font-medium">🏫 Campus Store Front</span>
+          </div>
+          <div class="space-y-3">
+            <div class="relative rounded-2xl overflow-hidden h-26 sm:h-30 shadow-md group">
+              <img src="https://images.unsplash.com/photo-1567401893414-76b7b1e5a7a5?auto=format&fit=crop&w=600&q=80" alt="Apparel Section" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <span class="absolute bottom-2 left-2 bg-gray-900/70 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded-full font-medium">👚 Hoodies & Tees Counter</span>
+            </div>
+            <div class="relative rounded-2xl overflow-hidden h-26 sm:h-30 shadow-md group">
+              <img src="https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=600&q=80" alt="Stationery Corner" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <span class="absolute bottom-2 left-2 bg-gray-900/70 backdrop-blur-md text-white text-[10px] px-2 py-0.5 rounded-full font-medium">✏️ Pastel Stationery Section</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Store Information -->
+        <div class="lg:col-span-5 space-y-4">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-pink-100 text-pink-700 text-xs font-bold rounded-full uppercase tracking-wider">
+            <i class="fa-solid fa-store"></i> Visit Our Campus Store
+          </span>
+          <h2 class="font-serif text-2xl sm:text-3xl font-bold text-gray-900 leading-snug">
+            Our Physical Store at Blossom Student Center
+          </h2>
+          <p class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+            Drop by our flagship campus store to try on pink oversized hoodies, inspect custom insulated flasks, test pastel ink pens, or collect your online orders in person!
+          </p>
+
+          <div class="space-y-2 text-xs text-gray-700 pt-2 border-t border-pink-200">
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-location-dot"></i></div>
+              <span><strong>Location:</strong> Student Union Complex, Ground Floor (Room 102)</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-clock"></i></div>
+              <span><strong>Timings:</strong> Mon - Fri: 8:30 AM - 5:30 PM | Sat: 9:00 AM - 2:00 PM</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-7 h-7 rounded-lg bg-pink-100 text-pink-600 flex items-center justify-center shrink-0"><i class="fa-solid fa-id-card"></i></div>
+              <span><strong>Student Pick-Up:</strong> Show your School ID for instant pickup & discounts!</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Catalog & Merchandise Section -->
+  <section id="catalog" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+      <div>
+        <span class="text-pink-600 font-bold text-xs uppercase tracking-wider block mb-1">Official Catalog</span>
+        <h2 class="font-serif text-3xl font-bold text-gray-900">Explore Store Merchandise</h2>
+      </div>
+
+      <!-- Filter Buttons -->
+      <div class="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+        <button onclick="filterCategory('all')" class="cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-pink-600 text-white shadow-sm transition whitespace-nowrap" data-cat="all">All Items</button>
+        <button onclick="filterCategory('hoodies')" class="cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white text-gray-600 hover:bg-pink-50 hover:text-pink-600 border border-pink-200 transition whitespace-nowrap" data-cat="hoodies">🌸 Hoodies</button>
+        <button onclick="filterCategory('tshirts')" class="cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white text-gray-600 hover:bg-pink-50 hover:text-pink-600 border border-pink-200 transition whitespace-nowrap" data-cat="tshirts">👕 T-Shirts</button>
+        <button onclick="filterCategory('caps')" class="cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white text-gray-600 hover:bg-pink-50 hover:text-pink-600 border border-pink-200 transition whitespace-nowrap" data-cat="caps">🧢 Caps</button>
+        <button onclick="filterCategory('bottles')" class="cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white text-gray-600 hover:bg-pink-50 hover:text-pink-600 border border-pink-200 transition whitespace-nowrap" data-cat="bottles">🥤 Water Bottles</button>
+        <button onclick="filterCategory('stationery')" class="cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white text-gray-600 hover:bg-pink-50 hover:text-pink-600 border border-pink-200 transition whitespace-nowrap" data-cat="stationery">✏️ Stationery</button>
+      </div>
+    </div>
+
+    <!-- Dynamic Product Cards Grid -->
+    <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <!-- Product Cards dynamically rendered by JavaScript -->
+    </div>
+  </section>
+
+  <!-- Student Reviews & Testimonials Section -->
+  <section id="reviews" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="glass-card rounded-3xl p-6 sm:p-10 shadow-lg relative overflow-hidden">
+      
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <!-- Review Summary -->
+        <div class="lg:col-span-4 bg-gradient-to-br from-pink-50 to-blossom-light p-6 rounded-2xl border border-pink-200 text-center">
+          <h3 class="font-serif text-2xl font-bold text-gray-900 mb-2">Student Reviews</h3>
+          <div class="text-5xl font-extrabold text-pink-600 my-2">4.9</div>
+          <div class="flex justify-center text-amber-400 text-sm gap-1 mb-2">
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+            <i class="fa-solid fa-star"></i>
+          </div>
+          <p class="text-xs text-gray-600 mb-4">Based on <span id="reviewCountText">184</span> verified campus reviews</p>
+          
+          <button onclick="openReviewModal()" class="w-full py-2.5 bg-pink-600 hover:bg-pink-700 text-white text-xs font-bold rounded-xl transition shadow">
+            ✍️ Write a Review
+          </button>
+        </div>
+
+        <!-- Recent Reviews Feed -->
+        <div class="lg:col-span-8 space-y-4">
+          <div id="reviewsList" class="space-y-4">
+            <!-- Review cards populated here -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Main Footer -->
+  <footer class="bg-gray-900 text-gray-300 mt-16 pt-12 pb-8 border-t-4 border-pink-500 relative z-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+        
+        <div>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="w-8 h-8 rounded-xl bg-pink-500 flex items-center justify-center text-white text-lg">🌸</div>
+            <span class="font-serif text-xl font-bold text-white">Blossom High</span>
+          </div>
+          <p class="text-xs text-gray-400 leading-relaxed mb-4">
+            Official store for Blossom High students, alumni, and faculty. Premium apparel, water bottles, and pastel stationery items.
+          </p>
+          <div class="flex space-x-3 text-pink-400">
+            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition" aria-label="Instagram"><i class="fa-brands fa-instagram text-xs"></i></a>
+            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition" aria-label="YouTube"><i class="fa-brands fa-youtube text-xs"></i></a>
+            <a href="#" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-pink-600 hover:text-white transition" aria-label="Twitter"><i class="fa-brands fa-twitter text-xs"></i></a>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Categories</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li><a href="#catalog" onclick="filterCategory('hoodies')" class="hover:text-pink-400 transition">Hoodies & Sweatshirts</a></li>
+            <li><a href="#catalog" onclick="filterCategory('tshirts')" class="hover:text-pink-400 transition">Varsity T-Shirts</a></li>
+            <li><a href="#catalog" onclick="filterCategory('caps')" class="hover:text-pink-400 transition">Embroidered Caps</a></li>
+            <li><a href="#catalog" onclick="filterCategory('bottles')" class="hover:text-pink-400 transition">Water Bottles</a></li>
+            <li><a href="#catalog" onclick="filterCategory('stationery')" class="hover:text-pink-400 transition">Pastel Stationery</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Campus Store</h4>
+          <ul class="space-y-2 text-xs text-gray-400">
+            <li class="flex items-center gap-2"><i class="fa-solid fa-location-dot text-pink-500"></i> Student Union, Ground Floor</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-clock text-pink-500"></i> Mon - Fri: 8:30 AM - 5:30 PM</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-envelope text-pink-500"></i> merch@blossomhigh.edu.in</li>
+            <li class="flex items-center gap-2"><i class="fa-solid fa-phone text-pink-500"></i> +91 98765 43210</li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="text-sm font-bold text-white mb-3 uppercase tracking-wider">Merch Newsletter</h4>
+          <p class="text-xs text-gray-400 mb-3">Subscribe to get instant discount codes and new merchandise drop alerts!</p>
+          <div class="flex">
+            <input type="email" placeholder="Your school email ID..." class="bg-gray-800 text-xs px-3 py-2 rounded-l-lg border-y border-l border-gray-700 text-white focus:outline-none focus:border-pink-500 w-full">
+            <button onclick="toast('Subscribed to campus merch updates!')" class="bg-pink-600 hover:bg-pink-700 text-white px-3 py-2 rounded-r-lg text-xs font-bold transition">Join</button>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="pt-6 border-t border-gray-800 text-center text-xs text-gray-500 flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p>© 2026 Blossom High Official Merchandise Store. All prices in Indian Rupees (₹).</p>
+        <div class="flex space-x-4">
+          <a href="#" class="hover:underline">Privacy Policy</a>
+          <a href="#" class="hover:underline">Terms of Service</a>
+          <a href="#" class="hover:underline">Exchange Policy</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Shopping Cart Drawer Overlay -->
+  <div id="cartDrawer" class="fixed inset-0 z-50 overflow-hidden pointer-events-none transition-opacity duration-300 opacity-0">
+    <div id="cartBackdrop" onclick="toggleCartDrawer()" class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+
+    <div class="fixed inset-y-0 right-0 max-w-full flex pl-10 pointer-events-auto">
+      <div id="cartPanel" class="w-screen max-w-md bg-white shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300">
+        
+        <!-- Drawer Header -->
+        <div class="p-4 sm:p-6 bg-pink-50 border-b border-pink-100 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <i class="fa-solid fa-basket-shopping text-pink-600 text-xl"></i>
+            <h3 class="font-serif font-bold text-lg text-gray-900">Your Shopping Basket</h3>
+            <span id="cartHeaderBadge" class="bg-pink-200 text-pink-800 text-xs px-2 py-0.5 rounded-full font-bold">0 items</span>
+          </div>
+          <button onclick="toggleCartDrawer()" class="text-gray-400 hover:text-gray-600 p-2 rounded-lg text-lg">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+
+        <!-- Drawer Items List -->
+        <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
+          <!-- Cart items dynamic render -->
+        </div>
+
+        <!-- Drawer Footer / Pricing & Promo -->
+        <div class="p-4 sm:p-6 border-t border-pink-100 bg-pink-50/50 space-y-4">
+          
+          <!-- Promo Input -->
+          <div>
+            <label class="block text-xs font-semibold text-gray-700 mb-1">Apply Coupon Code</label>
+            <div class="flex gap-2">
+              <input type="text" id="promoCodeInput" placeholder="e.g. PINK20, STUDENT15" class="uppercase text-xs flex-1 bg-white border border-pink-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-pink-400">
+              <button onclick="applyDiscountCode()" class="bg-pink-600 hover:bg-pink-700 text-white font-bold px-4 py-2 rounded-lg text-xs transition">Apply</button>
+            </div>
+            <p id="promoMessage" class="text-[11px] mt-1 font-medium hidden"></p>
+          </div>
+
+          <!-- Summary Breakdown in INR -->
+          <div class="space-y-1.5 text-xs text-gray-600 pt-2 border-t border-pink-200/60">
+            <div class="flex justify-between">
+              <span>Subtotal</span>
+              <span id="cartSubtotal" class="font-semibold text-gray-900">₹0</span>
+            </div>
+            <div class="flex justify-between text-pink-600 font-medium">
+              <span>Discount</span>
+              <span id="cartDiscount">-₹0</span>
+            </div>
+            <div class="flex justify-between">
+              <span>Estimated GST (5%)</span>
+              <span id="cartTax">₹0</span>
+            </div>
+            <div class="flex justify-between text-sm font-bold text-gray-900 pt-2 border-t border-pink-200">
+              <span>Total Amount</span>
+              <span id="cartTotal" class="text-pink-600 text-base">₹0</span>
+            </div>
+          </div>
+
+          <!-- Checkout Button -->
+          <button onclick="processCheckout()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl text-sm shadow-md transition transform active:scale-95 flex items-center justify-center gap-2">
+            <span>Proceed to Checkout</span>
+            <i class="fa-solid fa-arrow-right text-xs"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Write Review Modal -->
+  <div id="reviewModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl relative border border-pink-100">
+      <button onclick="closeReviewModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <h3 class="font-serif font-bold text-xl text-gray-900 mb-1">Write a Review</h3>
+      <p class="text-xs text-gray-500 mb-4">Share your thoughts on Blossom School Merchandise.</p>
+
+      <form id="reviewForm" onsubmit="submitReview(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Your Name</label>
+          <input type="text" id="reviewerName" required placeholder="e.g. Aarav Sharma" class="w-full text-xs px-3 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400">
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Item Reviewed</label>
+          <select id="reviewItem" class="w-full text-xs px-3 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400 bg-white">
+            <option>Blossom Crest Pink Oversized Hoodie</option>
+            <option>Varsity School Logo T-Shirt</option>
+            <option>Embroidered Pink Campus Cap</option>
+            <option>Insulated Stainless Steel Water Bottle</option>
+            <option>Aesthetic Pastel Highlighters (6 Pack)</option>
+            <option>School Hardcover Spiral Journal</option>
+            <option>Canvas Pencil Pouch & Gel Pen Set</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Rating</label>
+          <div class="flex gap-2 text-2xl text-amber-400 cursor-pointer" id="starRatingSelector">
+            <i class="fa-solid fa-star star-opt" onclick="setRating(1)"></i>
+            <i class="fa-solid fa-star star-opt" onclick="setRating(2)"></i>
+            <i class="fa-solid fa-star star-opt" onclick="setRating(3)"></i>
+            <i class="fa-solid fa-star star-opt" onclick="setRating(4)"></i>
+            <i class="fa-solid fa-star star-opt" onclick="setRating(5)"></i>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-gray-700 mb-1">Review Comments</label>
+          <textarea id="reviewComment" rows="3" required placeholder="Write your feedback..." class="w-full text-xs px-3 py-2 rounded-lg border border-pink-200 focus:outline-none focus:ring-2 focus:ring-pink-400"></textarea>
+        </div>
+
+        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">
+          Submit Review
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Order Success Confirmation Modal -->
+  <div id="checkoutSuccessModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm hidden">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative border border-pink-100">
+      <div class="w-16 h-16 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center text-3xl mx-auto mb-4">
+        🌸
+      </div>
+      <h3 class="font-serif font-bold text-xl text-gray-900 mb-2">Order Confirmed!</h3>
+      <p class="text-xs text-gray-600 mb-6 leading-relaxed">
+        Thank you for your order! A receipt and pickup pass have been emailed to your student account. Collect your items at the campus store!
+      </p>
+      <button onclick="closeCheckoutModal()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow">
+        Continue Shopping
+      </button>
+    </div>
+  </div>
+
+  <!-- Toast Notification Popup -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-3 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-4">
+    <div class="w-7 h-7 rounded-full bg-pink-500 flex items-center justify-center text-white text-xs font-bold" id="toastIcon">🌸</div>
+    <span class="text-xs font-medium" id="toastMessage">Item added to basket</span>
+  </div>
+
+  <script>
+    // Product items database with Indian Rupee (₹) prices
+    const products = [
+      {
+        id: 'h1',
+        name: 'Blossom Crest Oversized Pink Hoodie',
+        category: 'hoodies',
+        price: 1499,
+        originalPrice: 1999,
+        rating: 4.9,
+        reviewsCount: 54,
+        image: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80',
+        badge: 'Bestseller',
+        description: 'Super-soft fleece cotton hoodie featuring official Blossom High embroidered crest and blush pink hood lining.'
+      },
+      {
+        id: 'h2',
+        name: 'Varsity Zip-Up Pink Sweatshirt',
+        category: 'hoodies',
+        price: 1699,
+        originalPrice: 2199,
+        rating: 4.8,
+        reviewsCount: 38,
+        image: 'https://images.unsplash.com/photo-1509967419530-da38b4704bc6?auto=format&fit=crop&w=600&q=80',
+        badge: 'New',
+        description: 'Relaxed fit zip hoodie with ribbed cuffs, heavy pink drawstrings, and school back-print logo.'
+      },
+      {
+        id: 't1',
+        name: 'Classic Varsity Logo Cotton T-Shirt',
+        category: 'tshirts',
+        price: 599,
+        originalPrice: 799,
+        rating: 4.7,
+        reviewsCount: 72,
+        image: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80',
+        badge: 'Popular',
+        description: '100% organic breathable cotton tee with soft-touch screen printed Blossom High lettering.'
+      },
+      {
+        id: 't2',
+        name: 'Blossom Floral Graphic Soft Tee',
+        category: 'tshirts',
+        price: 649,
+        originalPrice: 899,
+        rating: 4.9,
+        reviewsCount: 41,
+        image: 'https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?auto=format&fit=crop&w=600&q=80',
+        badge: 'Limited',
+        description: 'Vintage white cotton t-shirt with delicate cherry blossom graphic and retro school emblem.'
+      },
+      {
+        id: 'c1',
+        name: 'Embroidered Campus Pink Dad Cap',
+        category: 'caps',
+        price: 399,
+        originalPrice: 599,
+        rating: 4.8,
+        reviewsCount: 46,
+        image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?auto=format&fit=crop&w=600&q=80',
+        badge: 'Essential',
+        description: 'Adjustable washed cotton cap in pastel blush pink with high-density embroidered school crest.'
+      },
+      {
+        id: 'c2',
+        name: 'Blossom Sport Breathable Visor Cap',
+        category: 'caps',
+        price: 349,
+        originalPrice: 499,
+        rating: 4.6,
+        reviewsCount: 22,
+        image: 'https://images.unsplash.com/photo-1534215754734-18e55d13e346?auto=format&fit=crop&w=600&q=80',
+        badge: 'Sport',
+        description: 'Lightweight moisture-wicking visor cap perfect for track, tennis, and outdoor campus activities.'
+      },
+      {
+        id: 'wb1',
+        name: 'Insulated Stainless Steel Flask (750ml)',
+        category: 'bottles',
+        price: 699,
+        originalPrice: 999,
+        rating: 5.0,
+        reviewsCount: 89,
+        image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?auto=format&fit=crop&w=600&q=80',
+        badge: 'Eco Choice',
+        description: 'Keeps water icy cold for 24 hours. Powder-coated matte pink finish with leakproof laser-engraved lid.'
+      },
+      {
+        id: 's1',
+        name: 'Aesthetic Pastel Highlighters (6 Pack)',
+        category: 'stationery',
+        price: 249,
+        originalPrice: 349,
+        rating: 4.9,
+        reviewsCount: 112,
+        image: 'https://images.unsplash.com/photo-1583485088034-697b5bc54ccd?auto=format&fit=crop&w=600&q=80',
+        badge: 'Study Pick',
+        description: 'Soft chisel-tip pastel ink highlighters that do not bleed through notebook pages.'
+      },
+      {
+        id: 's2',
+        name: 'Blossom Hardcover Spiral Journal',
+        category: 'stationery',
+        price: 299,
+        originalPrice: 449,
+        rating: 4.8,
+        reviewsCount: 65,
+        image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=600&q=80',
+        badge: 'Top Seller',
+        description: '192 ruled pages of 100gsm acid-free paper, gold foil emblem embossing, and pink elastic band.'
+      },
+      {
+        id: 's3',
+        name: 'Canvas Pencil Pouch & Gel Pen Set',
+        category: 'stationery',
+        price: 349,
+        originalPrice: 499,
+        rating: 4.7,
+        reviewsCount: 39,
+        image: 'https://images.unsplash.com/photo-1513542789411-b6a5d4f31634?auto=format&fit=crop&w=600&q=80',
+        badge: 'Bundle',
+        description: 'Spacious dual-compartment pink canvas pouch pre-filled with 5 smooth black gel pens.'
+      },
+      {
+        id: 's4',
+        name: 'Blossom Pastel Sticky Notes & Page Markers',
+        category: 'stationery',
+        price: 149,
+        originalPrice: 249,
+        rating: 4.8,
+        reviewsCount: 28,
+        image: 'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80',
+        badge: 'Cute',
+        description: 'Set of 6 color-coded pastel sticky note pads with school floral motif designs.'
+      }
+    ];
+
+    let cart = [];
+    let appliedDiscount = 0;
+    let appliedPromoCode = '';
+    let currentSlide = 0;
+    let selectedRating = 5;
+    let petalsEnabled = true;
+
+    let reviewsList = [
+      {
+        name: 'Priya Sharma',
+        item: 'Blossom Crest Pink Oversized Hoodie',
+        rating: 5,
+        date: 'Yesterday',
+        comment: 'The quality of the hoodie is amazing! Super warm fleece inside and the pink shade is so aesthetic.'
+      },
+      {
+        name: 'Rohan Mehta',
+        item: 'Insulated Stainless Steel Flask',
+        rating: 5,
+        date: '3 days ago',
+        comment: 'Keeps water ice cold right through 6 periods of classes. The school laser engraving looks premium.'
+      },
+      {
+        name: 'Ananya Verma',
+        item: 'Aesthetic Pastel Highlighters',
+        rating: 5,
+        date: '1 week ago',
+        comment: 'Love these pastel markers! They make my revision notes look so neat without smudging the paper.'
+      }
+    ];
+
+    const canvas = document.getElementById('flowerCanvas');
+    const ctx = canvas.getContext('2d');
+    let petals = [];
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    class Petal {
+      constructor() {
+        this.reset();
+      }
+
+      reset() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * -canvas.height;
+        this.size = Math.random() * 8 + 6;
+        this.speedY = Math.random() * 1.5 + 0.8;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.angle = Math.random() * 360;
+        this.spin = Math.random() * 2 - 1;
+        this.opacity = Math.random() * 0.6 + 0.4;
+      }
+
+      update() {
+        this.y += this.speedY;
+        this.x += Math.sin(this.y * 0.01) + this.speedX;
+        this.angle += this.spin;
+
+        if (this.y > canvas.height + 20) {
+          this.reset();
+        }
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate((this.angle * Math.PI) / 180);
+        ctx.globalAlpha = this.opacity;
+
+        ctx.beginPath();
+        ctx.fillStyle = '#FFCAD4';
+        ctx.moveTo(0, 0);
+        ctx.bezierCurveTo(-this.size, -this.size / 2, -this.size, this.size, 0, this.size * 1.5);
+        ctx.bezierCurveTo(this.size, this.size, this.size, -this.size / 2, 0, 0);
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#F43F5E';
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, this.size);
+        ctx.stroke();
+
+        ctx.restore();
+      }
+    }
+
+    function initPetals() {
+      petals = [];
+      const petalCount = window.innerWidth < 640 ? 25 : 45;
+      for (let i = 0; i < petalCount; i++) {
+        petals.push(new Petal());
+      }
+    }
+
+    function animatePetals() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      if (petalsEnabled) {
+        petals.forEach(petal => {
+          petal.update();
+          petal.draw();
+        });
+      }
+      requestAnimationFrame(animatePetals);
+    }
+
+    function togglePetals() {
+      petalsEnabled = !petalsEnabled;
+      const btn = document.getElementById('togglePetalsBtn');
+      if (petalsEnabled) {
+        btn.classList.add('text-pink-600');
+        btn.classList.remove('text-gray-400');
+        toast('🌸 Falling flowers enabled');
+      } else {
+        btn.classList.remove('text-pink-600');
+        btn.classList.add('text-gray-400');
+        toast('🌸 Falling flowers paused');
+      }
+    }
+
+    function updateSlider() {
+      const slides = document.querySelectorAll('.hero-slide');
+      const dots = document.querySelectorAll('#sliderDots span');
+
+      slides.forEach((slide, index) => {
+        if (index === currentSlide) {
+          slide.classList.remove('opacity-0', 'pointer-events-none');
+          slide.classList.add('opacity-100');
+        } else {
+          slide.classList.add('opacity-0', 'pointer-events-none');
+          slide.classList.remove('opacity-100');
+        }
+      });
+
+      dots.forEach((dot, index) => {
+        if (index === currentSlide) {
+          dot.className = 'w-3 h-3 rounded-full bg-pink-600 cursor-pointer transition-all';
+        } else {
+          dot.className = 'w-3 h-3 rounded-full bg-white/60 hover:bg-white cursor-pointer transition-all';
+        }
+      });
+    }
+
+    function nextSlide() {
+      const slides = document.querySelectorAll('.hero-slide');
+      currentSlide = (currentSlide + 1) % slides.length;
+      updateSlider();
+    }
+
+    function prevSlide() {
+      const slides = document.querySelectorAll('.hero-slide');
+      currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+      updateSlider();
+    }
+
+    function goToSlide(index) {
+      currentSlide = index;
+      updateSlider();
+    }
+
+    setInterval(() => {
+      nextSlide();
+    }, 6000);
+
+    function renderProducts(itemsToRender) {
+      const grid = document.getElementById('productsGrid');
+      if (itemsToRender.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-full py-12 text-center text-gray-500">
+            <i class="fa-solid fa-box-open text-4xl text-pink-300 mb-2"></i>
+            <p class="font-medium">No merchandise found matching your query.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = itemsToRender.map(p => `
+        <div class="glass-card rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group border border-pink-100 product-card-enter">
+          <!-- Product Image Header -->
+          <div class="relative h-56 bg-pink-50 overflow-hidden">
+            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500">
+            <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md text-pink-700 font-bold text-[10px] px-2.5 py-1 rounded-full uppercase tracking-wider shadow-sm">
+              ${p.badge}
+            </span>
+            <button onclick="addToCart('${p.id}')" class="absolute bottom-3 right-3 bg-pink-600 hover:bg-pink-700 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg transition transform active:scale-90" title="Add to Basket">
+              <i class="fa-solid fa-plus"></i>
+            </button>
+          </div>
+
+          <!-- Item Information -->
+          <div class="p-5 flex-1 flex flex-col justify-between space-y-3">
+            <div>
+              <div class="flex items-center gap-1 text-amber-400 text-xs mb-1">
+                <i class="fa-solid fa-star"></i>
+                <span class="font-bold text-gray-800">${p.rating}</span>
+                <span class="text-gray-400">(${p.reviewsCount})</span>
+              </div>
+              <h3 class="font-serif font-bold text-gray-900 text-base group-hover:text-pink-600 transition-colors">${p.name}</h3>
+              <p class="text-xs text-gray-500 line-clamp-2 mt-1 leading-relaxed">${p.description}</p>
+            </div>
+
+            <div class="pt-2 border-t border-pink-100 flex items-center justify-between">
+              <div>
+                <span class="text-lg font-extrabold text-pink-600">₹${p.price.toLocaleString('en-IN')}</span>
+                <span class="text-xs text-gray-400 line-through ml-1.5">₹${p.originalPrice.toLocaleString('en-IN')}</span>
+              </div>
+              <button onclick="addToCart('${p.id}')" class="text-xs font-bold text-pink-600 hover:text-pink-800 bg-pink-50 hover:bg-pink-100 px-3 py-1.5 rounded-lg transition">
+                + Add
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function filterCategory(cat) {
+      const btns = document.querySelectorAll('.cat-filter-btn');
+      btns.forEach(b => {
+        if (b.dataset.cat === cat) {
+          b.className = 'cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-pink-600 text-white shadow-sm transition whitespace-nowrap';
+        } else {
+          b.className = 'cat-filter-btn px-4 py-2 rounded-full text-xs font-semibold bg-white text-gray-600 hover:bg-pink-50 hover:text-pink-600 border border-pink-200 transition whitespace-nowrap';
+        }
+      });
+
+      if (cat === 'all') {
+        renderProducts(products);
+      } else {
+        const filtered = products.filter(p => p.category === cat);
+        renderProducts(filtered);
+      }
+    }
+
+    function handleSearch() {
+      const term = document.getElementById('searchInput').value.toLowerCase();
+      const filtered = products.filter(p => 
+        p.name.toLowerCase().includes(term) || p.description.toLowerCase().includes(term)
+      );
+      renderProducts(filtered);
+    }
+
+    function toggleCartDrawer() {
+      const drawer = document.getElementById('cartDrawer');
+      const panel = document.getElementById('cartPanel');
+      const isHidden = drawer.classList.contains('opacity-0');
+
+      if (isHidden) {
+        drawer.classList.remove('opacity-0', 'pointer-events-none');
+        panel.classList.remove('translate-x-full');
+      } else {
+        panel.classList.add('translate-x-full');
+        setTimeout(() => {
+          drawer.classList.add('opacity-0', 'pointer-events-none');
+        }, 300);
+      }
+    }
+
+    function addToCart(productId) {
+      const item = products.find(p => p.id === productId);
+      const existing = cart.find(c => c.id === productId);
+
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        cart.push({ ...item, quantity: 1 });
+      }
+
+      updateCartUI();
+      toast(`Added "${item.name}" to basket!`);
+    }
+
+    function changeQuantity(productId, delta) {
+      const index = cart.findIndex(c => c.id === productId);
+      if (index > -1) {
+        cart[index].quantity += delta;
+        if (cart[index].quantity <= 0) {
+          cart.splice(index, 1);
+        }
+      }
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const container = document.getElementById('cartItemsContainer');
+      const totalCount = cart.reduce((acc, c) => acc + c.quantity, 0);
+
+      document.getElementById('cartCountBadge').innerText = totalCount;
+      document.getElementById('cartHeaderBadge').innerText = `${totalCount} item${totalCount !== 1 ? 's' : ''}`;
+
+      if (cart.length === 0) {
+        container.innerHTML = `
+          <div class="h-full flex flex-col items-center justify-center text-center text-gray-400 py-12">
+            <i class="fa-solid fa-basket-shopping text-5xl text-pink-200 mb-3"></i>
+            <p class="font-medium text-gray-600">Your basket is empty</p>
+            <p class="text-xs text-gray-400 mt-1">Explore our catalog to add items!</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = cart.map(item => `
+          <div class="flex gap-3 bg-pink-50/50 p-3 rounded-xl border border-pink-100 items-center">
+            <img src="${item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg">
+            <div class="flex-1">
+              <h4 class="text-xs font-bold text-gray-900 leading-snug line-clamp-1">${item.name}</h4>
+              <span class="text-xs text-pink-600 font-extrabold">₹${item.price.toLocaleString('en-IN')}</span>
+              
+              <div class="flex items-center gap-2 mt-2">
+                <button onclick="changeQuantity('${item.id}', -1)" class="w-6 h-6 rounded bg-white text-gray-600 font-bold text-xs hover:bg-pink-200 transition border border-pink-200">-</button>
+                <span class="text-xs font-bold text-gray-800">${item.quantity}</span>
+                <button onclick="changeQuantity('${item.id}', 1)" class="w-6 h-6 rounded bg-white text-gray-600 font-bold text-xs hover:bg-pink-200 transition border border-pink-200">+</button>
+              </div>
+            </div>
+            <button onclick="changeQuantity('${item.id}', -${item.quantity})" class="text-gray-400 hover:text-rose-500 text-xs p-1">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        `).join('');
+      }
+
+      const subtotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+      const discountAmount = Math.round(subtotal * (appliedDiscount / 100));
+      const tax = Math.round((subtotal - discountAmount) * 0.05);
+      const total = (subtotal - discountAmount) + tax;
+
+      document.getElementById('cartSubtotal').innerText = `₹${subtotal.toLocaleString('en-IN')}`;
+      document.getElementById('cartDiscount').innerText = `-₹${discountAmount.toLocaleString('en-IN')}`;
+      document.getElementById('cartTax').innerText = `₹${tax.toLocaleString('en-IN')}`;
+      document.getElementById('cartTotal').innerText = `₹${total.toLocaleString('en-IN')}`;
+    }
+
+    function applyDiscountCode() {
+      const code = document.getElementById('promoCodeInput').value.trim().toUpperCase();
+      const msg = document.getElementById('promoMessage');
+
+      msg.classList.remove('hidden', 'text-emerald-600', 'text-rose-600');
+
+      if (code === 'PINK20') {
+        appliedDiscount = 20;
+        appliedPromoCode = 'PINK20';
+        msg.innerText = '🌸 Coupon PINK20 applied! (20% OFF)';
+        msg.classList.add('text-emerald-600');
+        toast('Applied 20% discount code!');
+      } else if (code === 'STUDENT15') {
+        appliedDiscount = 15;
+        appliedPromoCode = 'STUDENT15';
+        msg.innerText = '🎓 Student discount applied! (15% OFF)';
+        msg.classList.add('text-emerald-600');
+        toast('Applied 15% student discount!');
+      } else if (code === 'FREESHIP') {
+        appliedDiscount = 5;
+        appliedPromoCode = 'FREESHIP';
+        msg.innerText = '🚚 Free Campus Delivery applied!';
+        msg.classList.add('text-emerald-600');
+        toast('Applied FREESHIP voucher!');
+      } else {
+        msg.innerText = '❌ Invalid coupon code. Try PINK20 or STUDENT15';
+        msg.classList.add('text-rose-600');
+        return;
+      }
+
+      updateCartUI();
+    }
+
+    function copyPromoCode(code) {
+      document.execCommand('copy');
+      const input = document.getElementById('promoCodeInput');
+      if (input) input.value = code;
+      toast(`Copied "${code}" to clipboard!`);
+    }
+
+    function applyPromoAndScroll(code) {
+      document.getElementById('promoCodeInput').value = code;
+      applyDiscountCode();
+      toggleCartDrawer();
+    }
+
+    function processCheckout() {
+      if (cart.length === 0) {
+        toast('Your basket is empty!');
+        return;
+      }
+      cart = [];
+      appliedDiscount = 0;
+      updateCartUI();
+      toggleCartDrawer();
+      document.getElementById('checkoutSuccessModal').classList.remove('hidden');
+    }
+
+    function closeCheckoutModal() {
+      document.getElementById('checkoutSuccessModal').classList.add('hidden');
+    }
+
+    function renderReviews() {
+      const list = document.getElementById('reviewsList');
+      document.getElementById('reviewCountText').innerText = reviewsList.length + 181;
+
+      list.innerHTML = reviewsList.map(r => `
+        <div class="bg-white p-4 rounded-2xl border border-pink-100 shadow-sm space-y-2">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-pink-200 text-pink-700 font-bold text-xs flex items-center justify-center">
+                ${r.name.charAt(0)}
+              </div>
+              <div>
+                <h4 class="text-xs font-bold text-gray-900">${r.name}</h4>
+                <span class="text-[10px] text-pink-500 font-semibold">Verified Student • ${r.item}</span>
+              </div>
+            </div>
+            <span class="text-[10px] text-gray-400">${r.date}</span>
+          </div>
+
+          <div class="flex text-amber-400 text-xs">
+            ${Array(r.rating).fill('<i class="fa-solid fa-star"></i>').join('')}
+          </div>
+
+          <p class="text-xs text-gray-600 leading-relaxed">${r.comment}</p>
+        </div>
+      `).join('');
+    }
+
+    function openReviewModal() {
+      document.getElementById('reviewModal').classList.remove('hidden');
+      setRating(5);
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').classList.add('hidden');
+    }
+
+    function setRating(rating) {
+      selectedRating = rating;
+      const stars = document.querySelectorAll('#starRatingSelector .star-opt');
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.add('text-amber-400');
+          star.classList.remove('text-gray-300');
+        } else {
+          star.classList.remove('text-amber-400');
+          star.classList.add('text-gray-300');
+        }
+      });
+    }
+
+    function submitReview(e) {
+      e.preventDefault();
+      const name = document.getElementById('reviewerName').value;
+      const item = document.getElementById('reviewItem').value;
+      const comment = document.getElementById('reviewComment').value;
+
+      reviewsList.unshift({
+        name,
+        item,
+        rating: selectedRating,
+        date: 'Just now',
+        comment
+      });
+
+      renderReviews();
+      closeReviewModal();
+      document.getElementById('reviewForm').reset();
+      toast('Thank you! Your review has been published.');
+    }
+
+    function toast(message) {
+      const t = document.getElementById('toast');
+      document.getElementById('toastMessage').innerText = message;
+
+      t.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+      t.classList.add('opacity-100', 'translate-y-0');
+
+      setTimeout(() => {
+        t.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+        t.classList.remove('opacity-100', 'translate-y-0');
+      }, 3000);
+    }
+
+    window.onload = function() {
+      initPetals();
+      animatePetals();
+      renderProducts(products);
+      renderReviews();
+      updateCartUI();
+    };
+  </script>
+</body>
+</html>
